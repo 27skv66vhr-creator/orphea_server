@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>ORPHEA & ALEXION</title>
+  <style>
+    body {
+      background: #000;
+      color: #0ff;
+      font-family: Arial;
+      padding: 20px;
+    }
+    h1 {
+      color: #0ff;
+      text-shadow: 0 0 10px #0ff;
+    }
+    button {
+      padding: 10px 20px;
+      margin: 10px;
+      background:#111;
+      color:#0ff;
+      border:1px solid #0ff;
+      cursor:pointer;
+    }
+    #logs {
+      background: #111;
+      padding: 10px;
+      height: 300px;
+      overflow-y: scroll;
+      border:1px solid #0ff;
+    }
+    input {
+      width: 400px;
+      padding: 10px;
+      background:#111;
+      color:#0ff;
+      border:1px solid #0ff;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>ORPHEA & ALEXION — Dashboard IA</h1>
+
+  <input id="prompt" placeholder="Pose ta question à l’IA…">
+
+  <br><br>
+
+  <button onclick="ask('mistral')">Mistral</button>
+  <button onclick="ask('deepseek')">DeepSeek</button>
+  <button onclick="ask('gpt4o')">GPT‑4o</button>
+  <button onclick="ask('ollama')">Ollama (local)</button>
+  <button onclick="ask('openwebui')">OpenWebUI (local)</button>
+
+  <h2>Logs</h2>
+  <div id="logs"></div>
+
+  <script>
+    async function ask(engine) {
+      const prompt = document.getElementById("prompt").value;
+
+      await fetch(`/ask/${engine}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ prompt })
+      });
+
+      loadLogs();
+    }
+
+    async function loadLogs() {
+      const res = await fetch('/logs');
+      const logs = await res.json();
+      document.getElementById('logs').innerHTML =
+        logs.map(l => `<p>${l}</p>`).join('');
+    }
+
+    loadLogs();
+    setInterval(loadLogs, 1000);
+  </script>
+
+</body>
+</html>
